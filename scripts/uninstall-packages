@@ -1,0 +1,20 @@
+#!/bin/sh
+
+get_packages() {
+  script_dir="$(realpath "$(dirname "$0")")"
+  cat "$script_dir/../packages.txt"
+}
+
+uninstall_packages() {
+  # shellcheck disable=SC2046
+  echo apk del $(get_packages)
+}
+
+remove_post_install() {
+  service docker stop &&
+    rc-update del docker boot
+}
+
+remove_post_install &&
+  uninstall_packages &&
+  apk update
